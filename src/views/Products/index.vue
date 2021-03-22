@@ -72,7 +72,11 @@
             >
               <v-icon color="error" title="delete" small>mdi-delete</v-icon>
             </v-btn>
-            <v-btn icon @click="handleRestore(item)">
+            <v-btn
+              :disabled="item.deleted_at ? false : true"
+              icon
+              @click="handleRestore(item)"
+            >
               <v-icon color="primary" small title="Restore Product">
                 mdi-backup-restore
               </v-icon>
@@ -141,6 +145,10 @@
                       item-text="method"
                       item-value="id"
                       ref="pricing_method"
+                      :error-messages="
+                        errors.first(formKey) ||
+                        (serverErrors[formKey] && serverErrors[formKey][0])
+                      "
                     ></v-select>
                     <v-select
                       v-if="formKey === 'selling_method'"
@@ -153,6 +161,10 @@
                       :items="sellingMethods"
                       item-text="method"
                       item-value="id"
+                      :error-messages="
+                        errors.first(formKey) ||
+                        (serverErrors[formKey] && serverErrors[formKey][0])
+                      "
                     ></v-select>
                     <v-select
                       v-if="formKey === 'costing_method'"
@@ -166,6 +178,10 @@
                       item-text="method"
                       item-value="id"
                       ref="costing_method"
+                      :error-messages="
+                        errors.first(formKey) ||
+                        (serverErrors[formKey] && serverErrors[formKey][0])
+                      "
                     ></v-select>
                     <v-select
                       v-if="formKey === 'category_id'"
@@ -178,6 +194,10 @@
                       :items="categories"
                       item-text="name"
                       item-value="id"
+                      :error-messages="
+                        errors.first(formKey) ||
+                        (serverErrors[formKey] && serverErrors[formKey][0])
+                      "
                     ></v-select>
                     <v-text-field
                       v-if="formKey === 'price' && form.pricing_method === 1"
@@ -499,6 +519,18 @@ export default {
     this.handleTalbleHeaders();
   },
   watch: {
+    form: {
+      handler(formValue) {
+        if (formValue.pricing_method === 2) {
+          this.form.price = "";
+        }
+        if (formValue.costing_method === 2) {
+          this.form.cost = "";
+        }
+      },
+      immediate: true,
+      deep: true,
+    },
     $route: {
       handler({ query }) {
         this.getCategories();

@@ -46,7 +46,11 @@
             >
               <v-icon color="error" title="delete" small>mdi-delete</v-icon>
             </v-btn>
-            <v-btn icon @click="handleRestore(item)">
+            <v-btn
+              :disabled="item.deleted_at ? false : true"
+              icon
+              @click="handleRestore(item)"
+            >
               <v-icon color="primary" small title="restore customer">
                 mdi-backup-restore
               </v-icon>
@@ -111,6 +115,10 @@
                       label="Gender"
                       :items="genders"
                       v-model="form.gender"
+                      :error-messages="
+                        errors.first(formKey) ||
+                        (serverErrors[formKey] && serverErrors[formKey][0])
+                      "
                     ></v-select>
                   </template>
                 </v-col>

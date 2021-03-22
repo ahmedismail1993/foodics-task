@@ -30,6 +30,14 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const { errors } = error.response.data;
     state.serverErrors = errors;
+    if (errors) {
+      for (const key in errors) {
+        state.snackbar.text = errors[key][0];
+      }
+    }
+
+    state.snackbar.color = "red";
+    state.snackbar.visible = true;
     return Promise.reject(error);
   }
 );

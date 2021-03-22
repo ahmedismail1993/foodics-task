@@ -62,22 +62,38 @@ export default {
       const res = await this.axios.get("menu_display");
       const { data } = res.data;
       const { categories } = data;
-      if (categories) {
-        this.list = categories.map((category) => ({
+      const allCategories = categories || [];
+      const catIds = allCategories.map((el) => el.category_id);
+
+      this.list.forEach((el) => {
+        if (!catIds.includes(el.id)) {
+          allCategories.push({
+            category_id: el.id,
+            name: el.name,
+            children: [],
+          });
+        }
+      });
+      if (allCategories) {
+        this.list = allCategories.map((category) => ({
           id: category.category_id,
           name: category.name,
         }));
       }
-      console.log(categories);
     },
     getCategories() {
-      this.axios.get("/categories").then((res) => {
-        const { data } = res.data;
-        this.list = data.map((el) => ({
-          id: el.id,
-          name: el.name,
-        }));
-      });
+      this.axios
+        .get("/categories")
+        .then((res) => {
+          const { data } = res.data;
+          this.list = data.map((el) => ({
+            id: el.id,
+            name: el.name,
+          }));
+        })
+        .then(() => {
+          this.getMenuDispaly();
+        });
     },
     saveSortedCategories() {
       const formData = { categories: [] };
@@ -86,16 +102,13 @@ export default {
         name: el.name,
         children: [],
       }));
-      this.axios.put("/menu_display", formData).then((res) => {
-        console.log(res);
-      });
+      this.axios.put("/menu_display", formData);
     },
   },
   watch: {
     $route: {
       handler() {
         this.getCategories();
-        this.getMenuDispaly();
       },
       immediate: true,
     },
