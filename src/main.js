@@ -1,10 +1,20 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
+import Vue from "vue";
+import App from "./App.vue";
+import router from "./router";
+import vuetify from "./plugins/vuetify";
+import vueAxios from "vue-axios";
+import axiosInstance from "@/config/axios.js";
 
-Vue.config.productionTip = false
+import i18n from "./locales";
+import "./libs/vee-validate";
+
+Vue.config.productionTip = false;
+
+Vue.use(vueAxios, axiosInstance);
 
 new Vue({
   router,
-  render: h => h(App)
-}).$mount('#app')
+  vuetify,
+  i18n,
+  render: (h) => h(App)
+}).$mount("#app");
